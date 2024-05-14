@@ -12,7 +12,8 @@ const restify = require('restify');
 const {
     CloudAdapter,
     ConfigurationServiceClientCredentialFactory,
-    createBotFrameworkAuthenticationFromConfiguration
+    createBotFrameworkAuthenticationFromConfiguration,
+    teamsGetChannelId
 } = require('botbuilder');
 
 // This bot's main dialog.
@@ -76,7 +77,9 @@ server.post('/api/messages', async (req, res) => {
 
 server.post('/api/proactiveMessages', async (req, res) => {
     // Route received a request to adapter for processing
-    await adapter.process(req, res, (context) => myBot.proactiveMessage(context));
+    console.log('Inside proactive"')
+    await myBot.teamsCreateConversation(adapter,"http://localhost:54956", "Hello");
+    res.send(200)
 });
 // Listen for Upgrade requests for Streaming.
 server.on('upgrade', async (req, socket, head) => {
