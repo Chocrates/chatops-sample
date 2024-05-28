@@ -78,7 +78,7 @@ server.post('/api/messages', async (req, res) => {
 server.post('/api/proactiveMessages', async (req, res) => {
     // Route received a request to adapter for processing
     console.log('Inside proactive"')
-    await myBot.teamsCreateConversation(adapter,"http://localhost:54956", "Hello");
+    await myBot.teamsCreateConversation(adapter);
     res.send(200)
 });
 // Listen for Upgrade requests for Streaming.

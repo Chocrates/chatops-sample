@@ -1,4 +1,5 @@
-const { ActivityHandler, MessageFactory, teamsGetChannelId, TeamsInfo, BotFrameworkAdapter } = require('botbuilder');
+const { TurnContext, ActivityHandler, MessageFactory, teamsGetChannelId, TeamsInfo, BotFrameworkAdapter } = require('botbuilder');
+
 
 class EchoBot extends ActivityHandler {
     constructor() {
@@ -30,39 +31,33 @@ class EchoBot extends ActivityHandler {
         const [reference] = await TeamsInfo.sendMessageToTeamsChannel(context, activity, teamsChannelId, undefined);//process.env.MicrosoftAppId);
     }
 
-    async teamsCreateConversation(adapter, serviceUrl, message) {
-        const teamsChannelId = "emulator"
-        const conversationParameters = {
-            isGroup: true,
-            channelData: {
-                channel: {
-                    id: teamsChannelId
-                }
-            },
-            activity: message,
+    async teamsCreateConversation(adapter) {
+        const channelId = 'snip'
+        const teamId = 'snip'
+            
+        const reference = TurnContext.getConversationReference({
             bot: {
-                id: 'd1c86990-1146-11ef-b537-a7ce13724f54',
-                name: 'Bot',
-                role: 'bot'
+                id: process.env.MicrosoftAppId,
+                name: 'Your Bot'
+            },
+            channelId: channelId,
+            conversation: {
+                isGroup: true,
+                conversationType: 'channel',
+                id: `${teamId};messageid=${channelId}`
+            },
+            serviceUrl: 'https://smba.trafficmanager.net/amer/',
+            user: {
+                id: 'user-id-placeholder',
+                name: 'User'
             }
-        };
-        let conversationReference
-        let newActivityId
-        console.log('Right before sending the message')
-        await adapter.createConversationAsync(
-            'd1c86990-1146-11ef-b537-a7ce13724f54',
-            teamsChannelId,
-            serviceUrl,
-            null,
-            conversationParameters,
-            async (turnContext) => {
-                console.log('Inside the callback')
-                conversationReference = TurnContext.getConversationReference(turnContext.activity);
-                newActivityId = turnContext.activity.id;
-            }
-        )
+        });
+
+        await adapter.continueConversationAsync(reference, async (turnContext) => {
+            await turnContext.sendActivity('Hello, this is a proactive message from the bot!');
+        });
+
         console.log('After sending the message')
-        return [conversationReference, newActivityId]
     }
 }
 
